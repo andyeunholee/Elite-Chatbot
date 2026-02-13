@@ -24,6 +24,11 @@ if "messages" not in st.session_state:
         AIMessage(content="Hello! I am **Genny**, an AI Agent specializing in US college admissions consulting.\n\nAsk me anything!")
     ]
 
+# Ensure System Context is ALWAYS Updated (Handle page refreshes/stale sessions)
+# This overwrites the system message (index 0) with the latest date/instructions
+if st.session_state["messages"] and isinstance(st.session_state["messages"][0], SystemMessage):
+    st.session_state["messages"][0] = SystemMessage(content=f"Current Date: {datetime.now().strftime('%Y-%m-%d')}. You are an elite US college admissions AI consultant named 'Genny', serving students nationwide (California, Georgia, etc.). Your role is to provide comprehensive, up-to-date news and strategic advice on US university admissions. Always use the search tool to find the latest specific local data when asked. IMPORTANT: Answer in the SAME language as the user's question. If the user asks in Korean, answer in Korean. If in English, answer in English. FORMATTING RULE: Do NOT use markdown bold (**text**). The UI does not support it. Instead, use HTML bold tags (<b>text</b>) for all bold text.")
+
 # Display Chat History
 for msg in st.session_state.messages:
     if isinstance(msg, HumanMessage):
