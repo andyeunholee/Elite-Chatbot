@@ -172,15 +172,33 @@ with st.sidebar:
     import os
 
     # Scope for Google Sheets and Drive API
+    # Scope for Google Sheets and Drive API
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds_file = 'google_secret.json'
     
-    # Check if credentials file exists
-    if not os.path.exists(creds_file):
-        st.error("⚠️ 'google_secret.json' file not found! Please upload the service account key.")
-    else:
+    creds = None
+    
+    # 1. Try Loading from Streamlit Secrets (Cloud)
+    if "gcp_service_account" in st.secrets:
+        try:
+            # Create a dictionary from secrets
+            service_account_info = st.secrets["gcp_service_account"]
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
+        except Exception as e:
+            st.error(f"Error loading secrets: {e}")
+
+    # 2. Try Loading from Local File (Local Dev)
+    elif os.path.exists(creds_file):
         try:
             creds = ServiceAccountCredentials.from_json_keyfile_name(creds_file, scope)
+        except Exception as e:
+            st.error(f"Error loading local file: {e}")
+            
+    # Check if credentials were loaded
+    if not creds:
+        st.error("⚠️ Google Cloud Credentials not found! Please check secrets or upload 'google_secret.json'.")
+    else:
+        try:
             client = gspread.authorize(creds)
             
             # Connect to the Sheet
