@@ -179,16 +179,18 @@ with st.sidebar:
     creds = None
     
     # 1. Try Loading from Streamlit Secrets (Cloud)
-    if "gcp_service_account" in st.secrets:
-        try:
+    try:
+        # Check if secrets are available (might raise StreamlitSecretNotFoundError if no secrets.toml)
+        if "gcp_service_account" in st.secrets:
             # Create a dictionary from secrets
             service_account_info = st.secrets["gcp_service_account"]
             creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
-        except Exception as e:
-            st.error(f"Error loading secrets: {e}")
+    except Exception:
+        # Ignore errors if secrets are not found (local dev)
+        pass
 
     # 2. Try Loading from Local File (Local Dev)
-    elif os.path.exists(creds_file):
+    if not creds and os.path.exists(creds_file):
         try:
             creds = ServiceAccountCredentials.from_json_keyfile_name(creds_file, scope)
         except Exception as e:
@@ -248,6 +250,11 @@ with st.sidebar:
                         col1_values = sheet.col_values(1)
                         saved_students = col1_values[1:] if len(col1_values) > 1 else []
                     
+                    # Search filter for students
+                    student_search = st.text_input("🔍 Search Database", placeholder="Type name to filter...")
+                    if student_search:
+                        saved_students = [s for s in saved_students if student_search.lower() in str(s).lower()]
+
                     selected_student = st.selectbox("Load Saved Student", ["Select a student..."] + saved_students)
                     
                     if selected_student != "Select a student...":
