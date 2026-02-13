@@ -35,7 +35,7 @@ for msg in st.session_state.messages:
         with st.chat_message("user"):
             st.markdown(msg.content, unsafe_allow_html=True)
     elif isinstance(msg, AIMessage):
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar="elitelogo-Blue-removebg-preview.png"):
             # Handle list content for history display
             content_to_display = msg.content
             if isinstance(content_to_display, list):
@@ -54,7 +54,7 @@ if prompt := st.chat_input("Ask about college chances, advise, or news..."):
         st.markdown(prompt, unsafe_allow_html=True)
 
     # Process with Agent
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="elitelogo-Blue-removebg-preview.png"):
         message_placeholder = st.empty()
         full_response = ""
         
