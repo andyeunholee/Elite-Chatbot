@@ -253,7 +253,9 @@ with st.sidebar:
                     # Search filter for students
                     student_search = st.text_input("🔍 Search Database", placeholder="Type name to filter...")
                     if student_search:
+                        original_count = len(saved_students)
                         saved_students = [s for s in saved_students if student_search.lower() in str(s).lower()]
+                        st.caption(f"Found {len(saved_students)} matches out of {original_count}")
 
                     selected_student = st.selectbox("Load Saved Student", ["Select a student..."] + saved_students)
                     
