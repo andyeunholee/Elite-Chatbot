@@ -22,8 +22,8 @@ tool = TavilySearchResults(max_results=5)
 tools = [tool]
 
 # 3. Define LLM (Gemini)
-# Using gemini-2.0-flash for speed and performance.
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+# Using gemini-3-pro-preview for best reasoning capabilities.
+llm = ChatGoogleGenerativeAI(model="gemini-3-pro-preview")
 llm_with_tools = llm.bind_tools(tools)
 
 # 4. Define Nodes

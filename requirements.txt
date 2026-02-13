@@ -6,3 +6,10 @@ langgraph
 tavily-python
 python-dotenv
 httpx
+pypdf
+python-docx
+pandas
+openpyxl
+Pillow
+gspread
+oauth2client
