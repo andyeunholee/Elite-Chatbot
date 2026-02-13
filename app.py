@@ -2,6 +2,7 @@ import streamlit as st
 import asyncio
 from agent import agent
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from datetime import datetime
 
 # Page Config
 st.set_page_config(page_title="Elite U.S. College Advisor", page_icon="🎓")
@@ -19,7 +20,7 @@ with col2:
 # Initialize Session State
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        SystemMessage(content="You are an elite US college admissions AI consultant named 'Genny', serving students nationwide (California, Georgia, etc.). Your role is to provide comprehensive, up-to-date news and strategic advice on US university admissions. Always use the search tool to find the latest specific local data when asked. IMPORTANT: Answer in the SAME language as the user's question. If the user asks in Korean, answer in Korean. If in English, answer in English."),
+        SystemMessage(content=f"Current Date: {datetime.now().strftime('%Y-%m-%d')}. You are an elite US college admissions AI consultant named 'Genny', serving students nationwide (California, Georgia, etc.). Your role is to provide comprehensive, up-to-date news and strategic advice on US university admissions. Always use the search tool to find the latest specific local data when asked. IMPORTANT: Answer in the SAME language as the user's question. If the user asks in Korean, answer in Korean. If in English, answer in English. FORMATTING RULE: Do NOT use markdown bold (**text**). The UI does not support it. Instead, use HTML bold tags (<b>text</b>) for all bold text."),
         AIMessage(content="Hello! I am **Genny**, an AI Agent specializing in US college admissions consulting.\n\nAsk me anything!")
     ]
 
@@ -27,7 +28,7 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     if isinstance(msg, HumanMessage):
         with st.chat_message("user"):
-            st.markdown(msg.content)
+            st.markdown(msg.content, unsafe_allow_html=True)
     elif isinstance(msg, AIMessage):
         with st.chat_message("assistant"):
             # Handle list content for history display
@@ -38,14 +39,14 @@ for msg in st.session_state.messages:
                     if isinstance(block, dict) and block.get("type") == "text":
                         text_content += block.get("text", "")
                 content_to_display = text_content
-            st.markdown(content_to_display)
+            st.markdown(content_to_display, unsafe_allow_html=True)
 
 # Handle User Input
 if prompt := st.chat_input("Ask about college chances, advise, or news..."):
     # Add user message to state
     st.session_state.messages.append(HumanMessage(content=prompt))
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(prompt, unsafe_allow_html=True)
 
     # Process with Agent
     with st.chat_message("assistant"):
@@ -88,7 +89,7 @@ if prompt := st.chat_input("Ask about college chances, advise, or news..."):
                         status_container.write("✅ Found results.")
             
             status_container.update(label="Finished!", state="complete", expanded=False)
-            message_placeholder.markdown(full_response)
+            message_placeholder.markdown(full_response, unsafe_allow_html=True)
             
             # Save assistant response to state
             st.session_state.messages.append(AIMessage(content=full_response))
@@ -300,7 +301,7 @@ with st.sidebar:
         st.session_state["student_data"] = ""
         # Reset chat history to initial state
         st.session_state["messages"] = [
-            SystemMessage(content="You are an elite US college admissions AI consultant named 'Genny', serving students nationwide (California, Georgia, etc.). Your role is to provide comprehensive, up-to-date news and strategic advice on US university admissions. Always use the search tool to find the latest specific local data when asked. IMPORTANT: Answer in the SAME language as the user's question. If the user asks in Korean, answer in Korean. If in English, answer in English."),
+            SystemMessage(content=f"Current Date: {datetime.now().strftime('%Y-%m-%d')}. You are an elite US college admissions AI consultant named 'Genny', serving students nationwide (California, Georgia, etc.). Your role is to provide comprehensive, up-to-date news and strategic advice on US university admissions. Always use the search tool to find the latest specific local data when asked. IMPORTANT: Answer in the SAME language as the user's question. If the user asks in Korean, answer in Korean. If in English, answer in English. FORMATTING RULE: Do NOT use markdown bold (**text**). The UI does not support it. Instead, use HTML bold tags (<b>text</b>) for all bold text."),
             AIMessage(content="Hello! I am **Genny**, an AI Agent specializing in US college admissions consulting.\n\nAsk me anything!")
         ]
         st.rerun()
